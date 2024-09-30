@@ -41,6 +41,7 @@ public class TodoListService {
         }
     }
 
+
     public TodoListDTO mapTodoDetails(TodoList todoList) {
         TodoListDTO todoListDTO = new TodoListDTO();
         todoListDTO.setTitle(todoList.getTitle());
@@ -61,6 +62,12 @@ public class TodoListService {
             existingTodo.setTitle(updateTodoList.getTitle());
             existingTodo.setDescription(updateTodoList.getDescription());
             existingTodo.setCheckTodo(updateTodoList.getCheckTodo());
+            existingTodo.setTodoPriorities(updateTodoList.getTodoPriorities());
+            existingTodo.setDeadline(updateTodoList.getDeadline());
+
+            if(updateTodoList.getCheckTodo() == true) {
+                existingTodo.setStatus("Сделано");
+            }
 
             todoListRepository.save(existingTodo);
             return existingTodo;
@@ -86,10 +93,10 @@ public class TodoListService {
         List<TodoList> timeLists = todoListRepository.findTodoListsByDeadlineBefore(now);
 
         if (timeLists.isEmpty()) {
-           log.info("Нет просроченных задач.");
+            log.info("Нет просроченных задач.");
         } else {
             timeLists.forEach(todo -> {
-                if (!"Просрочено".equals(todo.getStatus())) {
+                if (!"Просрочено".equals(todo.getStatus()) && todo.getCheckTodo() != true) {
                     todo.setStatus("Просрочено");
                     todoListRepository.save(todo);
                     log.info("Статус задачи '" + todo.getTitle() + "' изменен на 'Просрочено'.");
